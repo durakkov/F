@@ -23,6 +23,12 @@ cp "$ROOT_DIR/bindings/dart/woxel_bindings.dart" "$FLUTTER_DIR/lib/bindings/dart
 TMP_EXTRACT_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_EXTRACT_DIR"' EXIT
 
+if [[ ! -x "$HOST_ANDROID_DIR/gradlew" ]]; then
+  echo "[4/6] Gradle wrapper not found in android/. Generating wrapper via system gradle"
+  (cd "$HOST_ANDROID_DIR" && gradle wrapper)
+  chmod +x "$HOST_ANDROID_DIR/gradlew"
+fi
+
 echo "[4/6] Building Android host APK that contains libwoxel_core.so"
 (cd "$HOST_ANDROID_DIR" && ./gradlew :app:assembleDebug --no-daemon)
 
