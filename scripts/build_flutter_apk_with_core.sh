@@ -23,10 +23,27 @@ cp "$ROOT_DIR/bindings/dart/woxel_bindings.dart" "$FLUTTER_DIR/lib/bindings/dart
 TMP_EXTRACT_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_EXTRACT_DIR"' EXIT
 
+WRAPPER_PROPS="$HOST_ANDROID_DIR/gradle/wrapper/gradle-wrapper.properties"
+if [[ -f "$WRAPPER_PROPS" ]] && grep -q "gradle-4\." "$WRAPPER_PROPS"; then
+  echo "[4/6] Detected legacy Gradle 4 wrapper in android/. Removing legacy wrapper"
+  rm -f "$HOST_ANDROID_DIR/gradlew" "$HOST_ANDROID_DIR/gradlew.bat"
+  rm -rf "$HOST_ANDROID_DIR/gradle/wrapper"
+fi
+
 if [[ ! -x "$HOST_ANDROID_DIR/gradlew" ]]; then
-  echo "[4/6] Gradle wrapper not found in android/. Generating wrapper via system gradle"
-  (cd "$HOST_ANDROID_DIR" && gradle wrapper)
-  chmod +x "$HOST_ANDROID_DIR/gradlew"
+  if [[ -x "$FLUTTER_DIR/android/gradlew" ]]; then
+    echo "[4/6] Gradle wrapper not found in android/. Copying wrapper from app_flutter/android"
+    cp "$FLUTTER_DIR/android/gradlew" "$HOST_ANDROID_DIR/gradlew"
+    [[ -f "$FLUTTER_DIR/android/gradlew.bat" ]] && cp "$FLUTTER_DIR/android/gradlew.bat" "$HOST_ANDROID_DIR/gradlew.bat"
+    mkdir -p "$HOST_ANDROID_DIR/gradle/wrapper"
+    cp "$FLUTTER_DIR/android/gradle/wrapper/gradle-wrapper.jar" "$HOST_ANDROID_DIR/gradle/wrapper/gradle-wrapper.jar"
+    cp "$FLUTTER_DIR/android/gradle/wrapper/gradle-wrapper.properties" "$HOST_ANDROID_DIR/gradle/wrapper/gradle-wrapper.properties"
+    chmod +x "$HOST_ANDROID_DIR/gradlew"
+  else
+    echo "[4/6] Gradle wrapper not found. Generating wrapper via system gradle (forcing modern Gradle)"
+    (cd "$HOST_ANDROID_DIR" && gradle wrapper --gradle-version 8.14.3)
+    chmod +x "$HOST_ANDROID_DIR/gradlew"
+  fi
 fi
 
 echo "[4/6] Building Android host APK that contains libwoxel_core.so"
