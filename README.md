@@ -48,6 +48,19 @@ cd ../android
 ./gradlew :app:assembleDebug
 ```
 
+### Быстрый bash-фикс для ошибки `libwoxel_core.so not found`
+
+```bash
+# Из корня репозитория
+./scripts/build_flutter_apk_with_core.sh
+```
+
+Скрипт автоматически:
+- удаляет предыдущий `app_flutter/build/app/outputs/flutter-apk/app-debug.apk`,
+- собирает Android host с `libwoxel_core.so`,
+- копирует `libwoxel_core.so` в `app_flutter/android/app/src/main/jniLibs/<abi>/`,
+- собирает новый Flutter APK.
+
 ## Ограничения “системного” режима
 
 Woxel может быть выбран как обработчик интентов (view/open/browse), но полноценный режим системного файлового менеджера требует:

@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import '../models/file_item.dart';
-import '../../../bindings/dart/woxel_bindings.dart';
+import '../bindings/dart/woxel_bindings.dart';
 
 class WoxelClient {
   final _bindings = WoxelBindings();
