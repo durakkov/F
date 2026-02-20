@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build libsqlite3-dev
+      - name: Build core
+        run: |
+          cmake -S core_cpp -B build/core -G Ninja
+          cmake --build build/core
+          ctest --test-dir build/core --output-on-failure
+
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Flutter pub get
+        run: |
+          cd app_flutter
+          flutter pub get
+      - name: Flutter analyze
+        run: |
+          cd app_flutter
+          flutter analyze
+      - name: Flutter test
+        run: |
+          cd app_flutter
+          flutter test
