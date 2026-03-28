@@ -1,0 +1,9 @@
+services:
+  woxel:
+    build: .
+    container_name: woxel
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data

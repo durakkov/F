@@ -1,0 +1,19 @@
+[Unit]
+Description=Woxel Telegram moderation bot
+After=network.target
+
+[Service]
+User=woxel
+Group=woxel
+WorkingDirectory=/opt/woxel
+EnvironmentFile=/opt/woxel/.env
+ExecStart=/usr/local/bin/woxel
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
